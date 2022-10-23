@@ -81,7 +81,7 @@ const makePattern = (rawData) => {
 };
 
 /// Fetches a MOD file from a URL, and creates a player
-const tracker = async (url) => {
+const player = async (url) => {
     // Fetch the MOD file
     const response = await fetch(url);
     if (!response.ok) {
@@ -283,3 +283,5 @@ const tracker = async (url) => {
         setSongPosition : setSongPosition
     }
 };
+
+window.jsModPlayer = player;

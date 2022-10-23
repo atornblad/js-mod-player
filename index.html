@@ -13,7 +13,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JS-MOD-player by Anders Marzi Tornblad</title>
     <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet';linkLoaded.bind(this)()">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <link rel="stylesheet" href="style.css">
     <script src="player.js"></script>
     <link rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">
@@ -78,7 +78,7 @@
             const modFile = button.dataset.modfile;
             const infoUrl = button.dataset.modinfo;
 
-            tracker(modFile).then(player => player.load().then(() => {
+            jsModPlayer(modFile).then(player => player.load().then(() => {
                 player.watchRows((songPos, row) => {
                     spr.value = songPos;
                     spi.value = songPos;
