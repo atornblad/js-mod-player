@@ -1,0 +1,102 @@
+:root {
+    --window-background: #f1f1f1;
+    --main-background: #ffffff;
+    --main-color: #0e0e0e;
+    --button-background: #658d4a;
+    --button-hover: #4a6935;
+    --button-text: #ffffff;
+    --border: rgba(0, 0, 0, 0.5);
+}
+@media (prefers-color-scheme: dark) {
+     :root {
+        --window-background: #0f0f0f;
+        --main-background: #000000;
+        --main-color: #ffffff;
+        --button-background: #8ab66d;
+        --button-hover: #addc8d;
+        --button-text: #000000;
+        --border: rgba(255, 255, 255, 0.5);
+    }
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    font-size: inherit;
+    font-weight: inherit;
+    font-style: inherit;
+    color: inherit;
+    border: 0 none;
+    line-height: inherit;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+html {
+    font-size: 16px;
+    font-family: "Barlow", "Arial", "Helvetica", sans-serif;
+    line-height: 1.4;
+    background-color: var(--window-background);
+    color: var(--main-color);
+    display: block;
+}
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+}
+header {
+    background-color: var(--main-background);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+header > * {
+    width: 80%;
+}
+main {
+    background-color: var(--main-background);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-top: 1px solid var(--border);
+}
+main > * {
+    width: 80%;
+}
+h1 {
+    font-size: 2.5rem;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+}
+h2 {
+    font-size: 2rem;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+}
+h1 + p, h2 + p, p + p {
+    margin-top: 1rem;
+}
+
+button {
+    border: 1px solid var(--border);
+    padding: 0.2rem 0.5rem;
+    cursor: pointer;
+    border-radius: 2px;
+    background-color: var(--button-background);
+    color: var(--button-text);
+}
+button:hover {
+    background-color: var(--button-hover);
+}
+input[type=number] {
+    border: 1px solid var(--border);
+    padding: 0.2rem 0.5rem;
+}
