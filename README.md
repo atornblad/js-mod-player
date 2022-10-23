@@ -2,6 +2,8 @@
 
 This is a MOD player, developed in vanilla JavaScript using modern (2022) Web Audio and Audio Worklet APIs.
 
+Try it out on my [GitHub Page](https://atornblad.github.io/js-mod-player)
+
 ## Basic usage
 
 To simply load a MOD file and play it, call the async `jsModPlayer` function, which will return a player object. Then call its `play` method from inside an event listener.
