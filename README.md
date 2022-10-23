@@ -4,6 +4,8 @@ This is a MOD player, developed in vanilla JavaScript using modern (2022) Web Au
 
 Try it out on my [GitHub Page](https://atornblad.github.io/js-mod-player)
 
+License: [Creative Commons Attribution-NonCommercial 4.0 International License](http://creativecommons.org/licenses/by-nc/4.0/)
+
 ## Basic usage
 
 To simply load a MOD file and play it, call the async `jsModPlayer` function, which will return a player object. Then call its `play` method from inside an event listener.
