@@ -81,7 +81,7 @@ const makePattern = (rawData) => {
 };
 
 /// Fetches a MOD file from a URL, and creates a player
-const player = async (url) => {
+export const jsModPlayer = async (url) => {
     // Fetch the MOD file
     const response = await fetch(url);
     if (!response.ok) {
@@ -186,7 +186,7 @@ const player = async (url) => {
                 }
             }
             const gain = audio.createGain();
-            gain.gain = 0.5;
+            gain.gain.setValueAtTime(0.5, 0);
             processor.connect(gain).connect(audio.destination);
             processorConnected = true;
         }
@@ -283,5 +283,3 @@ const player = async (url) => {
         setSongPosition : setSongPosition
     }
 };
-
-window.jsModPlayer = player;

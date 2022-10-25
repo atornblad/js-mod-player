@@ -15,7 +15,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <link rel="stylesheet" href="style.css">
-    <script src="player.js"></script>
     <link rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">
     <link rel="repository" href="https://github.com/atornblad/js-mod-player">
 </head>
@@ -31,9 +30,9 @@
         <h2>Modules</h2>
         <p>These modules are loaded from <a href="https://modarchive.org/">The Mod Archive</a>.</p>
         <p>
-            <button id="play" class="mod-player" data-modinfo="https://modarchive.org/index.php?request=view_by_moduleid&query=41529" data-modfile="https://api.modarchive.org/downloads.php?moduleid=48324">Livin' Insanity</button>
-            <button id="play" class="mod-player" data-modinfo="https://modarchive.org/index.php?request=view_by_moduleid&query=41529" data-modfile="https://api.modarchive.org/downloads.php?moduleid=41529">Elekfunk!</button>
-            <button id="play" class="mod-player" data-modinfo="https://modarchive.org/index.php?request=view_by_moduleid&query=101789" data-modfile="https://api.modarchive.org/downloads.php?moduleid=101789">Musiklinjen</button>
+            <button id="play" class="mod-player" data-modinfo="https://modarchive.org/index.php?request=view_by_moduleid&query=41529" data-modfile="https://api.modarchive.org/downloads.php?moduleid=48324">Sanity Arte part 1</button>
+            <button id="play" class="mod-player" data-modinfo="https://modarchive.org/index.php?request=view_by_moduleid&query=41529" data-modfile="https://api.modarchive.org/downloads.php?moduleid=41529">Sanity Arte part 2</button>
+            <button id="play" class="mod-player" data-modinfo="https://modarchive.org/index.php?request=view_by_moduleid&query=101789" data-modfile="https://api.modarchive.org/downloads.php?moduleid=101789">Phenomena Enigma</button>
         </p>
         <p>
             <input type="range" min="0" max="127" value="0" id="songposrange" />
@@ -47,7 +46,9 @@
         <p id="output"></p>
     </main>
 
-    <script>
+    <script type="module">
+        import { jsModPlayer } from './player.js';
+
         const
             spr = document.getElementById('songposrange'),
             spi = document.getElementById('songposinput'),

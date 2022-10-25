@@ -8,15 +8,23 @@ License: [Creative Commons Attribution-NonCommercial 4.0 International License](
 
 ## Basic usage
 
-To simply load a MOD file and play it, call the async `jsModPlayer` function, which will return a player object. Then call its `play` method from inside an event listener.
+The `player.js` file is an ES6 module, so you can't load it using a `<script>` tag, but instead you have to `import` it from your main script.
 
-```javascript
-// Musiklinjen by Firefox and Tip (Jimmy Fredriksson and Robert Österbergh)
-const url = 'https://api.modarchive.org/downloads.php?moduleid=101789';
-const player = await jsModPlayer(url);
+To load a MOD file and play it, call the async `jsModPlayer` function, which will return a player object. Then call its `play` method from inside an event listener.
 
-// Audio is only allowed to start when a user interacts (clicks, taps)
-document.body.addEventListener('click', async () => player.play());
+```html
+<script type="module">
+    // Import the module
+    import { jsModPlayer } from './player.js';
+
+    // Musiklinjen by Firefox and Tip (Jimmy Fredriksson and Robert Österbergh)
+    // The song from Phenomena Enigma (1991)
+    const url = 'https://api.modarchive.org/downloads.php?moduleid=101789';
+    const player = await jsModPlayer(url);
+
+    // Audio is only allowed to start when a user interacts (clicks, taps)
+    document.body.addEventListener('click', async () => await player.play());
+</script>
 ```
 
 ## Reacting to timing events

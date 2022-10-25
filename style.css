@@ -25,6 +25,7 @@
     font-size: inherit;
     font-weight: inherit;
     font-style: inherit;
+    font-variant-numeric: tabular-nums;
     color: inherit;
     border: 0 none;
     line-height: inherit;
