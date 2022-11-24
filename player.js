@@ -86,7 +86,7 @@ export class ModPlayer {
         if (this.playing) return;
         if (!this.worklet) return;
 
-        //this.audio.resume();
+        this.audio.resume();
         this.worklet.port.postMessage({
             type: 'play',
             mod: this.mod,

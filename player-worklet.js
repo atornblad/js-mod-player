@@ -224,7 +224,7 @@ class Channel {
                 }
                 break;
             case SAMPLE_OFFSET:
-                this.sampleIndex = data * 256;
+                this.setSampleIndex = data * 256;
                 break;
             case SET_VOLUME:
                 this.setVolume = data;
