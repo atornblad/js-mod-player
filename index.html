@@ -69,7 +69,7 @@
         });
         spi.addEventListener('input', e => {
             spr.value = spi.value;
-            modPlayer.setSongPosition(spi.value);
+            modPlayer.setRow(parseInt(spr.value, 10), 0);
         });
         stop.addEventListener('click', e => {
             modPlayer.stop();
