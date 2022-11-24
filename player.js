@@ -16,8 +16,8 @@ export class ModPlayer {
 
         this.mod = await loadMod(url);
         this.audio = new AudioContext();
-        await this.audio.audioWorklet.addModule('./player-worklet.js');
-        this.worklet = new AudioWorkletNode(this.audio, 'player-worklet');
+        await this.audio.audioWorklet.addModule('./mod-player-worklet.js');
+        this.worklet = new AudioWorkletNode(this.audio, 'mod-player-worklet');
         this.worklet.connect(this.audio.destination);
 
         this.worklet.port.onmessage = this.onmessage.bind(this);

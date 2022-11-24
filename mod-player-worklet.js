@@ -257,7 +257,7 @@ class Channel {
     }
 }
 
-class PlayerWorklet extends AudioWorkletProcessor {
+class ModPlayerWorklet extends AudioWorkletProcessor {
     constructor() {
         super();
         this.port.onmessage = this.onmessage.bind(this);
@@ -416,4 +416,4 @@ class PlayerWorklet extends AudioWorkletProcessor {
     }
 }
 
-registerProcessor('player-worklet', PlayerWorklet);
+registerProcessor('mod-player-worklet', ModPlayerWorklet);
