@@ -30,9 +30,9 @@
         <h2>Modules</h2>
         <p>These modules are loaded from <a href="https://modarchive.org/">The Mod Archive</a>.</p>
         <p>
-            <button id="play" class="mod-player" data-modinfo="https://modarchive.org/index.php?request=view_by_moduleid&query=41529" data-modfile="https://api.modarchive.org/downloads.php?moduleid=48324">Sanity Arte part 1</button>
-            <button id="play" class="mod-player" data-modinfo="https://modarchive.org/index.php?request=view_by_moduleid&query=41529" data-modfile="https://api.modarchive.org/downloads.php?moduleid=41529">Sanity Arte part 2</button>
-            <button id="play" class="mod-player" data-modinfo="https://modarchive.org/index.php?request=view_by_moduleid&query=101789" data-modfile="https://api.modarchive.org/downloads.php?moduleid=101789">Phenomena Enigma</button>
+            <button class="mod-player" data-modinfo="https://modarchive.org/index.php?request=view_by_moduleid&query=41529" data-modfile="https://api.modarchive.org/downloads.php?moduleid=48324">Sanity Arte part 1</button>
+            <button class="mod-player" data-modinfo="https://modarchive.org/index.php?request=view_by_moduleid&query=41529" data-modfile="https://api.modarchive.org/downloads.php?moduleid=41529">Sanity Arte part 2</button>
+            <button class="mod-player" data-modinfo="https://modarchive.org/index.php?request=view_by_moduleid&query=101789" data-modfile="https://api.modarchive.org/downloads.php?moduleid=101789">Phenomena Enigma</button>
         </p>
         <p>
             <input type="range" min="0" max="127" value="0" id="songposrange" />
@@ -43,11 +43,12 @@
             <button id="resume">Resume</button>
         </p>
         <p id="song"></p>
-        <p id="output"></p>
+        <p id="output">Playing song <a id="songinfo" href="" target="_blank"><span id="songname">---</span> <em>(from The Mod Archive)</em><br>
+            Mod file source: <a id="modfile" href="${modFile}" download>${modFile}</a></p>
     </main>
 
     <script type="module">
-        import { jsModPlayer } from './player.js';
+        import { ModPlayer } from './player.js';
 
         const
             spr = document.getElementById('songposrange'),
@@ -55,13 +56,16 @@
             stop = document.getElementById('stop'),
             resume = document.getElementById('resume'),
             song = document.getElementById('song'),
-            output = document.getElementById('output');
+            output = document.getElementById('output'),
+            songinfo = document.getElementById('songinfo'),
+            songname = document.getElementById('songname'),
+            modfile = document.getElementById('modfile');
 
-        let modPlayer = null;
+        const modPlayer = new ModPlayer();
 
         spr.addEventListener('input', e => {
             spi.value = spr.value;
-            modPlayer.setSongPosition(spr.value);
+            modPlayer.setRow(parseInt(spr.value, 10), 0);
         });
         spi.addEventListener('input', e => {
             spr.value = spi.value;
@@ -79,26 +83,24 @@
             const modFile = button.dataset.modfile;
             const infoUrl = button.dataset.modinfo;
 
-            jsModPlayer(modFile).then(player => player.load().then(() => {
-                player.watchRows((songPos, row) => {
+            button.addEventListener('click', async (e) => {
+                modPlayer.unload();
+                await modPlayer.load(modFile);
+                modPlayer.watchRows((songPos, row) => {
                     spr.value = songPos;
                     spi.value = songPos;
                     output.textContent = `Song position: ${songPos}, bar: ${row >> 2} (row ${row})`;
                 });
 
-                button.addEventListener('click', async (e) => {
-                    if (modPlayer) {
-                        modPlayer.stop();
-                    }
-                    spr.max = player.songLength - 1;
-                    spi.max = player.songLength - 1;
+                spr.max = modPlayer.mod.length - 1;
+                spi.max = modPlayer.mod.length - 1;
 
-                    modPlayer = player;
-                    song.innerHTML = `Playing song <a target="_blank" href="${infoUrl}">${player.name} <em>(From The Mod Archive)</em></a><br/>Mod file source: <a href="${modFile}" download>${modFile}</a><br/>`;
+                songname.textContent = modPlayer.mod.name;
+                songinfo.href = infoUrl;
+                song.innerHTML = `Playing song <a target="_blank" href="${infoUrl}">${modPlayer.mod.name} <em>(From The Mod Archive)</em></a><br/>Mod file source: <a href="${modFile}" download>${modFile}</a><br/>`;
 
-                    await player.play();
-                })
-            }));
+                await modPlayer.play();
+            });
         }
     </script>
 </body>

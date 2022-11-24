@@ -5,6 +5,7 @@
     --button-background: #658d4a;
     --button-hover: #4a6935;
     --button-text: #ffffff;
+    --input-background: #ffffff;
     --border: rgba(0, 0, 0, 0.5);
 }
 @media (prefers-color-scheme: dark) {
@@ -15,6 +16,7 @@
         --button-background: #8ab66d;
         --button-hover: #addc8d;
         --button-text: #000000;
+        --input-background: #999999;
         --border: rgba(255, 255, 255, 0.5);
     }
 }
@@ -100,4 +102,6 @@ button:hover {
 input[type=number] {
     border: 1px solid var(--border);
     padding: 0.2rem 0.5rem;
+    background-color: var(--input-background);
+    color: #000;
 }
