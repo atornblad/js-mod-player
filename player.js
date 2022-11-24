@@ -4,6 +4,7 @@ export class ModPlayer {
     constructor() {
         this.mod = null;
         this.audio = null;
+        this.gain = null;
         this.worklet = null;
         this.playing = false;
         this.rowCallbacks = [];
@@ -16,9 +17,11 @@ export class ModPlayer {
 
         this.mod = await loadMod(url);
         this.audio = new AudioContext();
+        this.gain = this.audio.createGain();
+        this.gain.gain.value = 0.3;
         await this.audio.audioWorklet.addModule('./mod-player-worklet.js');
         this.worklet = new AudioWorkletNode(this.audio, 'mod-player-worklet');
-        this.worklet.connect(this.audio.destination);
+        this.worklet.connect(this.gain).connect(this.audio.destination);
 
         this.worklet.port.onmessage = this.onmessage.bind(this);
     }
@@ -122,5 +125,9 @@ export class ModPlayer {
             position: position,
             row: row
         });
+    }
+
+    setVolume(volume) {
+        this.gain.gain.value = volume;
     }
 }

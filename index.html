@@ -24,7 +24,12 @@
         <h1>JS-MOD-player</h1>
         <p>Vanilla JavaScript MOD player, made by <a href="https://atornblad.se/">Anders Marzi Tornblad</a></p>
         <p>GitHub repository: <a href="https://github.com/atornblad/js-mod-player">atornblad/js-mod-player</a></p>
-        <p>License: <a href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a></p>
+        <p>Blog posts: 
+            <a href="https://atornblad.se/generating-sound-in-modern-web-audio-api">Part 1/</a>, 
+            <a href="https://atornblad.se/loading-mod-files-in-the-browser">Part 2</a>, 
+            <a href="https://atornblad.se/playing-a-full-song-almost">Part 3</a>, 
+            <a href="https://atornblad.se/implementing-looping-and-the-first-effects">Part 4</a>, 
+            <a href="https://atornblad.se/adding-pitch-related-effects/">Creative Commons Attribution-NonCommercial 4.0 International License</a></p>
     </header>
     <main>
         <h2>Modules</h2>
@@ -35,6 +40,7 @@
             <button class="mod-player" data-modinfo="https://modarchive.org/index.php?request=view_by_moduleid&query=101789" data-modfile="https://api.modarchive.org/downloads.php?moduleid=101789">Phenomena Enigma</button>
         </p>
         <p>
+            <label for="songposrange">Position: </label>
             <input type="range" min="0" max="127" value="0" id="songposrange" />
             <input type="number" min="0" max="127" value="0" id="songposinput" />
         </p>
@@ -42,9 +48,13 @@
             <button id="stop">Stop</button>
             <button id="resume">Resume</button>
         </p>
+        <p>
+            <label for="volume">Volume: </label>
+            <input type="range" min="0" max="100" value="30" id="volume" />
+        </p>
         <p id="song"></p>
         <p id="output">Playing song <a id="songinfo" href="" target="_blank"><span id="songname">---</span> <em>(from The Mod Archive)</em><br>
-            Mod file source: <a id="modfile" href="${modFile}" download>${modFile}</a></p>
+            Mod file source: <a id="modfile" href="" download>----</a></p>
     </main>
 
     <script type="module">
@@ -59,7 +69,8 @@
             output = document.getElementById('output'),
             songinfo = document.getElementById('songinfo'),
             songname = document.getElementById('songname'),
-            modfile = document.getElementById('modfile');
+            modfile = document.getElementById('modfile'),
+            volume = document.getElementById('volume');
 
         const modPlayer = new ModPlayer();
 
@@ -77,6 +88,9 @@
         resume.addEventListener('click', e => {
             modPlayer.resume();
         });
+        volume.addEventListener('input', e => {
+            modPlayer.setVolume(0.01 * volume.value);
+        });
 
         const modPlayerButtons = Array.from(document.querySelectorAll('button.mod-player'));
         for (let button of modPlayerButtons) {
@@ -86,6 +100,7 @@
             button.addEventListener('click', async (e) => {
                 modPlayer.unload();
                 await modPlayer.load(modFile);
+                modPlayer.setVolume(0.01 * volume.value);
                 modPlayer.watchRows((songPos, row) => {
                     spr.value = songPos;
                     spi.value = songPos;
