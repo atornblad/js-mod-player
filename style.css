@@ -61,11 +61,19 @@ header > * {
 main {
     background-color: var(--main-background);
     padding: 1rem;
-    margin-bottom: 1rem;
     display: flex;
     flex-direction: column;
     align-items: center;
     border-top: 1px solid var(--border);
+}
+footer {
+    background-color: var(--main-background);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-top: 1px solid var(--border);
+    margin-bottom: 1rem;
 }
 main > * {
     width: 80%;
