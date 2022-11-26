@@ -66,13 +66,13 @@ export class Mod {
         this.length = new Uint8Array(modfile, 950, 1)[0];
 
         // Store the pattern table
-        this.patternTable = new Uint8Array(modfile, 952, 128);
+        this.patternTable = new Uint8Array(modfile, 952, this.length);
 
         // Find the highest pattern number
         const maxPatternIndex = Math.max(...this.patternTable);
 
         // Extract all instruments
-        this.instruments = [];
+        this.instruments = [null];
         let sampleStart = 1084 + (maxPatternIndex + 1) * 1024;
         for (let i = 0; i < 31; ++i) {
             const instr = new Instrument(modfile, i, sampleStart);

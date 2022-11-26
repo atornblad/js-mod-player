@@ -110,7 +110,7 @@ class Channel {
         this.delayNote = false;
 
         if (note.instrument) {
-            this.setInstrument = this.worklet.mod.instruments[note.instrument - 1];
+            this.setInstrument = this.worklet.mod.instruments[note.instrument];
             this.setVolume = this.setInstrument.volume;
         }
 

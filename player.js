@@ -1,14 +1,20 @@
 import { loadMod } from './loader.js';
 
+const AUDIO = Symbol('audio');
+const GAIN = Symbol('gain');
+const WORKLET = Symbol('worklet');
+const ROW_CALLBACKS = Symbol('rowCallbacks');
+const SINGLE_CALLBACKS = Symbol('singleCallbacks');
+
 export class ModPlayer {
     constructor() {
         this.mod = null;
-        this.audio = null;
-        this.gain = null;
-        this.worklet = null;
         this.playing = false;
-        this.rowCallbacks = [];
-        this.singleCallbacks = { };
+        this[AUDIO] = null;
+        this[GAIN] = null;
+        this[WORKLET] = null;
+        this[ROW_CALLBACKS] = [];
+        this[SINGLE_CALLBACKS] = { };
     }
 
     async load(url) {
@@ -16,14 +22,14 @@ export class ModPlayer {
         if (this.playing) this.stop();
 
         this.mod = await loadMod(url);
-        this.audio = new AudioContext();
-        this.gain = this.audio.createGain();
-        this.gain.gain.value = 0.3;
-        await this.audio.audioWorklet.addModule('./mod-player-worklet.js');
-        this.worklet = new AudioWorkletNode(this.audio, 'mod-player-worklet');
-        this.worklet.connect(this.gain).connect(this.audio.destination);
+        this[AUDIO] = new AudioContext();
+        this[GAIN] = this[AUDIO].createGain();
+        this[GAIN].gain.value = 0.3;
+        await this[AUDIO].audioWorklet.addModule('./mod-player-worklet.js');
+        this[WORKLET] = new AudioWorkletNode(this[AUDIO], 'mod-player-worklet');
+        this[WORKLET].connect(this[GAIN]).connect(this[AUDIO].destination);
 
-        this.worklet.port.onmessage = this.onmessage.bind(this);
+        this[WORKLET].port.onmessage = this.onmessage.bind(this);
     }
 
     onmessage(event) {
@@ -31,14 +37,14 @@ export class ModPlayer {
         switch (data.type) {
             case 'row':
                 // Call all the general row callbacks
-                for (let callback of this.rowCallbacks) {
+                for (let callback of this[ROW_CALLBACKS]) {
                     callback(data.position, data.rowIndex);
                 }
 
                 // Call all the single row callbacks
                 const key = data.position + ':' + data.rowIndex;
-                if (this.singleCallbacks[key]) {
-                    for (let callback of this.singleCallbacks[key]) {
+                if (key in this[SINGLE_CALLBACKS]) {
+                    for (let callback of this[SINGLE_CALLBACKS][key]) {
                         callback(data.position, data.rowIndex);
                     }
                 }
@@ -47,14 +53,14 @@ export class ModPlayer {
     }
 
     watchRows(callback) {
-        this.worklet.port.postMessage({
+        this[WORKLET].port.postMessage({
             type: 'enableRowSubscription'
         });
-        this.rowCallbacks.push(callback);
+        this[ROW_CALLBACKS].push(callback);
     }
 
     watch(position, row, callback) {
-        this.worklet.port.postMessage({
+        this[WORKLET].port.postMessage({
             type: 'enableRowSubscription'
         });
         
@@ -63,56 +69,56 @@ export class ModPlayer {
 
         // There can be multiple callbacks for the same position and row
         // so we store them in an array
-        if (!this.singleCallbacks[key]) {
-            this.singleCallbacks[key] = [];
+        if (!(key in this[SINGLE_CALLBACKS])) {
+            this[SINGLE_CALLBACKS][key] = [];
         }
 
         // Add the callback to the array
-        this.singleCallbacks[key].push(callback);
+        this[SINGLE_CALLBACKS][key].push(callback);
     }
 
     unload() {
         if (this.playing) this.stop();
-        if (!this.worklet) return;
+        if (!this[WORKLET]) return;
 
-        this.worklet.disconnect();
-        this.audio.close();
+        this[WORKLET].disconnect();
+        this[AUDIO].close();
 
         this.mod = null;
-        this.audio = null;
-        this.worklet = null;
-        this.rowCallbacks = [];
-        this.singleCallbacks = { };
+        this[AUDIO] = null;
+        this[WORKLET] = null;
+        this[ROW_CALLBACKS] = [];
+        this[SINGLE_CALLBACKS] = { };
     }
 
     async play() {
         if (this.playing) return;
-        if (!this.worklet) return;
+        if (!this[WORKLET]) return;
 
-        this.audio.resume();
-        this.worklet.port.postMessage({
+        this[AUDIO].resume();
+        this[WORKLET].port.postMessage({
             type: 'play',
             mod: this.mod,
-            sampleRate: this.audio.sampleRate
+            sampleRate: this[AUDIO].sampleRate
         });
 
         this.playing = true;
     }
 
-    async stop() {
+    stop() {
         if (!this.playing) return;
 
-        this.worklet.port.postMessage({
+        this[WORKLET].port.postMessage({
             type: 'stop'
         });
 
         this.playing = false;
     }
 
-    async resume() {
+    resume() {
         if (this.playing) return;
 
-        this.worklet.port.postMessage({
+        this[WORKLET].port.postMessage({
             type: 'resume'
         });
 
@@ -120,7 +126,7 @@ export class ModPlayer {
     }
 
     setRow(position, row) {
-        this.worklet.port.postMessage({
+        this[WORKLET].port.postMessage({
             type: 'setRow',
             position: position,
             row: row
@@ -128,6 +134,6 @@ export class ModPlayer {
     }
 
     setVolume(volume) {
-        this.gain.gain.value = volume;
+        this[GAIN].gain.value = volume;
     }
 }
