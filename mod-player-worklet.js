@@ -1,4 +1,4 @@
-const COPPER_FREQUENCY = 3546894.6;
+const PAULA_FREQUENCY = 3546894.6;
 
 const ARPEGGIO = 0x00;
 const SLIDE_UP = 0x01;
@@ -99,7 +99,7 @@ class Channel {
         if (this.currentPeriod < 113) this.currentPeriod = 113;
         if (this.currentPeriod > 856) this.currentPeriod = 856;
          
-        const sampleRate = COPPER_FREQUENCY / this.currentPeriod;
+        const sampleRate = PAULA_FREQUENCY / this.currentPeriod;
         this.sampleSpeed = sampleRate / this.worklet.sampleRate;
     }
 
@@ -353,9 +353,10 @@ class ModPlayerWorklet extends AudioWorkletProcessor {
         else if (this.rowIndex == 64) {
             this.rowIndex = 0;
             ++this.position;
-            if (this.position >= this.mod.length) {
-                this.position = 0;
-            }
+        }
+        
+        if (this.position >= this.mod.length) {
+            this.position = 0;
         }
 
         const patternIndex = this.mod.patternTable[this.position];
