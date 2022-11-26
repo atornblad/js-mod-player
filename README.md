@@ -35,7 +35,29 @@ Add the following `script` element to your html file:
 </script>
 ```
 
-This will create an instance of the `ModPlayer` class and load the MOD file. When the user clicks the window, the music will start to play. Web Audio API does not allow a script to start playing audio immediately when a web page has loaded, so you have to wait for some type of user input, like a click or a tap.
+This will create an instance of the `ModPlayer` class and load the MOD file. When the user clicks the window, the music will start to play. Web Audio API does not allow audio to play until the user has interacted with the page, so you have to wait for some type of user input, like a click or a tap.
+
+## Event system
+
+To use music as a time source, or for synchronizing effects and events in a demo, you can use the `watch`
+and `watchRows` methods to get notified at the exact moment different rows are played.
+
+### Examples
+
+```javascript
+// Calls the switchToNextScene method when the music
+// reaches row 16 in position 4.
+player.watch(4, 16, switchToNextScene);
+
+// Calls the flashTheScreen method every 4 rows
+player.watchRows((pos, row) => {
+    if ((row % 4) === 0) {
+        flashTheScreen();
+    }
+});
+```
+
+# Specifications
 
 ## ModPlayer class
 
@@ -55,28 +77,6 @@ Public member variables of the `ModPlayer` class:
 
  - `mod : Mod` The loaded MOD file.
  - `playing : Boolean` Returns true if music is currently playing.
-
-## Event system
-
-To use music as a time source, or for synchronizing effects and events in a demo, you can use the `watch`
-and `watchRows` methods to get notified at the exact moment different rows are played.
-
-### Examples
-
-```javascript
-// Calls the switchToNextScene method when the music
-// reaches row 16 in position 4.
-player.watch(4, 16, () => switchToNextScene());
-
-// Calls the flashTheScreen method every 4 rows
-player.watchRows((pos, row) => {
-    if ((row % 4) == 0) {
-        flashTheScreen();
-    }
-});
-```
-
-# Specifications
 
 ## Mod class
 
