@@ -10,27 +10,20 @@ License: [Creative Commons Attribution-NonCommercial 4.0 International License](
 
 ---
 ## Getting started
-
-Add the following JavaScript files from this repository to your project:
-
- - loader.js
- - player.js
- - mod-player-worklet.js
- - mod.js
-
 Add a Protracker 2.3 compatible MOD file to your project.
 
 Add the following `script` element to your html file:
 
 ```html
 <script type="module">
-    import { ModPlayer } from './player.js';
+    import { ModPlayer } from 'https://atornblad.se/files/js-mod-player/player.js';
 
-    const player = new ModPlayer();
+    const audio = new AudioContext();
+    const player = new ModPlayer(audio);
     await player.load('MOD_FILE_FILENAME');
 
     window.addEventListener('click', async () => {
-        await player.play();
+        player.play();
     });
 </script>
 ```

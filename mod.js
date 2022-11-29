@@ -25,7 +25,18 @@ class Note {
         // e = effect
         this.instrument = (noteData[0] & 0xf0) | (noteData[2] >> 4);
         this.period = (noteData[0] & 0x0f) * 256 + noteData[1];
-        this.effect = (noteData[2] & 0x0f) * 256 + noteData[3];
+        let effectId = noteData[2] & 0x0f;
+        let effectData = noteData[3];
+        if (effectId === 0x0e) {
+            effectId = 0xe0 | (effectData >> 4);
+            effectData &= 0x0f;
+        }
+        this.rawEffect = ((noteData[2] & 0x0f) << 8) | noteData[3];
+        this.effectId = effectId;
+        this.effectData = effectData;
+        this.effectHigh = effectData >> 4;
+        this.effectLow = effectData & 0x0f;
+        this.hasEffect = effectId || effectData;
     }
 }
 

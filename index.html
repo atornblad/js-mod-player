@@ -65,7 +65,7 @@
     </footer>
 
     <script type="module">
-        import { ModPlayer } from './player.js';
+        import { ModPlayer } from 'https://atornblad.se/files/js-mod-player/player.js';
 
         const
             spr = document.getElementById('songposrange'),
@@ -79,7 +79,8 @@
             modfile = document.getElementById('modfile'),
             volume = document.getElementById('volume');
 
-        const modPlayer = new ModPlayer();
+        const audio = new AudioContext();
+        const modPlayer = new ModPlayer(audio);
 
         spr.addEventListener('input', e => {
             spi.value = spr.value;
@@ -121,7 +122,7 @@
                 songinfo.href = infoUrl;
                 song.innerHTML = `Playing song <a target="_blank" href="${infoUrl}">${modPlayer.mod.name} <em>(From The Mod Archive)</em></a><br/>Mod file source: <a href="${modFile}" download>${modFile}</a><br/>`;
 
-                await modPlayer.play();
+                modPlayer.play();
             });
         }
     </script>

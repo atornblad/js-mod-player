@@ -125,7 +125,7 @@ class Channel {
             this.setSampleIndex = 0;
         }
 
-        this.effect(note.effect);
+        this.effect(note);
 
         if (this.delayNote) return;
 
@@ -151,7 +151,7 @@ class Channel {
         }
     }
 
-    effect(raw) {
+    effect({hasEffect, effectId, effectData, effectHigh, effectLow}) {
         this.volumeSlide = 0;
         this.periodDelta = 0;
         this.portamento = false;
@@ -160,38 +160,28 @@ class Channel {
         this.retrigger = false;
         this.delayNote = false;
 
-        if (!raw) return;
+        if (!hasEffect) return;
 
-        let id = raw >> 8;
-        let data = raw & 0xff;
-
-        if (id == EXTENDED) {
-            id = (id << 4) | (data >> 4);
-            data = data & 0x0f;
-        }
-
-        switch (id) {
+        switch (effectId) {
             case ARPEGGIO:
-                this.arpeggio = [0, data >> 4, data & 0x0f];
+                this.arpeggio = [0, effectHigh, effectLow];
                 break;
             case SLIDE_UP:
-                this.periodDelta = -data;
+                this.periodDelta = -effectData;
                 break;
             case SLIDE_DOWN:
-                this.periodDelta = data;
+                this.periodDelta = effectData;
                 break;
             case TONE_PORTAMENTO:
                 this.portamento = true;
-                if (data) this.portamentoSpeed = data;
+                if (effectData) this.portamentoSpeed = effectData;
                 this.periodDelta = this.portamentoSpeed;
                 this.setCurrentPeriod = false;
                 this.setSampleIndex = false;
                 break;
             case VIBRATO:
-                const speed = data >> 4;
-                const depth = data & 0x0f;
-                if (speed) this.vibratoSpeed = speed;
-                if (depth) this.vibratoDepth = depth;
+                if (effectHigh) this.vibratoSpeed = effectHigh;
+                if (effectLow) this.vibratoDepth = effectLow;
                 this.vibrato = true;
                 break;
             case TONE_PORTAMENTO_WITH_VOLUME_SLIDE:
@@ -199,58 +189,46 @@ class Channel {
                 this.setCurrentPeriod = false;
                 this.setSampleIndex = false;
                 this.periodDelta = this.portamentoSpeed;
-                if (data & 0xf0) {
-                    this.volumeSlide = data >> 4;
-                }
-                else if (data & 0x0f) {
-                    this.volumeSlide = -(data & 0x0f);
-                }
+                if (effectHigh) this.volumeSlide = effectHigh;
+                else if (effectLow) this.volumeSlide = -effectLow;
                 break;
             case VIBRATO_WITH_VOLUME_SLIDE:
                 this.vibrato = true;
-                if (data & 0xf0) {
-                    this.volumeSlide = data >> 4;
-                }
-                else if (data & 0x0f) {
-                    this.volumeSlide = -(data & 0x0f);
-                }
+                if (effectHigh) this.volumeSlide = effectHigh;
+                else if (effectLow) this.volumeSlide = -effectLow;
                 break;
             case VOLUME_SLIDE:
-                if (data & 0xf0) {
-                    this.volumeSlide = data >> 4;
-                }
-                else if (data & 0x0f) {
-                    this.volumeSlide = -(data & 0x0f);
-                }
+                if (effectHigh) this.volumeSlide = effectHigh;
+                else if (effectLow) this.volumeSlide = -effectLow;
                 break;
             case SAMPLE_OFFSET:
-                this.setSampleIndex = data * 256;
+                this.setSampleIndex = effectData * 256;
                 break;
             case SET_VOLUME:
-                this.setVolume = data;
+                this.setVolume = effectData;
                 break;
             case PATTERN_BREAK:
-                const row = (data >> 4) * 10 + (data & 0x0f);
+                const row = effectHigh * 10 + effectLow;
                 this.worklet.setPatternBreak(row);
                 break;
             case SET_SPEED:
-                if (data >= 1 && data <= 31) {
-                    this.worklet.setTicksPerRow(data);
+                if (effectData >= 1 && effectData <= 31) {
+                    this.worklet.setTicksPerRow(effectData);
                 }
                 else {
-                    this.worklet.setBpm(data);
+                    this.worklet.setBpm(effectData);
                 }
                 break;
             case RETRIGGER_NOTE:
-                this.retrigger = data;
+                this.retrigger = effectData;
                 break;
             case DELAY_NOTE:
-                this.delayNote = data;
+                this.delayNote = effectData;
                break;
             default:
-                if (!unimplementedEffects.has(id)) {
-                    unimplementedEffects.add(id);
-                    console.log(`Unimplemented effect ${id.toString(16)}`);
+                if (!unimplementedEffects.has(effectId)) {
+                    unimplementedEffects.add(effectId);
+                    console.log(`Unimplemented effect ${effectId.toString(16)}`);
                 }
                 break;
         }

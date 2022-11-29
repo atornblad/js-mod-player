@@ -7,10 +7,10 @@ const ROW_CALLBACKS = Symbol('rowCallbacks');
 const SINGLE_CALLBACKS = Symbol('singleCallbacks');
 
 export class ModPlayer {
-    constructor() {
+    constructor(audioContext) {
         this.mod = null;
         this.playing = false;
-        this[AUDIO] = null;
+        this[AUDIO] = audioContext || null;
         this[GAIN] = null;
         this[WORKLET] = null;
         this[ROW_CALLBACKS] = [];
@@ -22,7 +22,7 @@ export class ModPlayer {
         if (this.playing) this.stop();
 
         this.mod = await loadMod(url);
-        this[AUDIO] = new AudioContext();
+        if (!this[AUDIO]) this[AUDIO] = new AudioContext();
         this[GAIN] = this[AUDIO].createGain();
         this[GAIN].gain.value = 0.3;
         await this[AUDIO].audioWorklet.addModule('./mod-player-worklet.js');
@@ -91,7 +91,7 @@ export class ModPlayer {
         this[SINGLE_CALLBACKS] = { };
     }
 
-    async play() {
+    play() {
         if (this.playing) return;
         if (!this[WORKLET]) return;
 
