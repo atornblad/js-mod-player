@@ -58,7 +58,7 @@ Public methods of the `ModPlayer` class:
 
  - `async load(url)` Loads a MOD file from a url.
  - `unload()` Unloads a loaded MOD file and frees resources.
- - `async play()` Starts playing music.
+ - `play()` Starts playing music.
  - `stop()` Stops playing.
  - `resume()` Resumes playing after a call top `stop()`.
  - `setVolume(volume)` Sets the volume of an internal gain node. Default value: 0.3
