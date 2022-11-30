@@ -60,7 +60,7 @@ Public methods of the `ModPlayer` class:
  - `unload()` Unloads a loaded MOD file and frees resources.
  - `play()` Starts playing music.
  - `stop()` Stops playing.
- - `resume()` Resumes playing after a call top `stop()`.
+ - `resume()` Resumes playing after a call to `stop()`.
  - `setVolume(volume)` Sets the volume of an internal gain node. Default value: 0.3
  - `setRow(position, row)` Jumps to a specific time in the music.
  - `watch(position, row, callback)` Registers a callback for a position and row.
