@@ -18,8 +18,7 @@ export class ModPlayer {
     }
 
     async load(url) {
-        if (this.worklet) this.unload();
-        if (this.playing) this.stop();
+        if (this[WORKLET]) this.unload();
 
         this.mod = await loadMod(url);
         if (!this[AUDIO]) this[AUDIO] = new AudioContext();
