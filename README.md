@@ -48,6 +48,10 @@ player.watchRows((pos, row) => {
         flashTheScreen();
     }
 });
+
+// Logs to the console when the music stops due to
+// the Set Speed Zero (F00) effect
+player.watchStop(() => console.log('Stopped!'));
 ```
 
 # Specifications
