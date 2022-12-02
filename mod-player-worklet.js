@@ -243,6 +243,7 @@ class ModPlayerWorklet extends AudioWorkletProcessor {
         this.channels = [ new Channel(this), new Channel(this), new Channel(this), new Channel(this) ];
         this.patternBreak = false;
         this.publishRow = false;
+        this.publishStop = false;
     }
 
     onmessage(e) {
@@ -264,6 +265,9 @@ class ModPlayerWorklet extends AudioWorkletProcessor {
                 break;
             case 'disableRowSubscription':
                 this.publishRow = false;
+                break;
+            case 'enableStopSubscription':
+                this.publishStop = true;
                 break;
         }
     }
@@ -315,6 +319,9 @@ class ModPlayerWorklet extends AudioWorkletProcessor {
     setBpm(bpm) {
         this.bpm = bpm;
         this.outputsPerTick = this.sampleRate * 60 / this.bpm / 4 / 6;
+        if ((bpm === 0) && this.publishStop) {
+            this.port.postMessage({ type: 'stop' });
+        }
     }
 
     setPatternBreak(row) {

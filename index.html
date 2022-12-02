@@ -105,6 +105,8 @@
             const modFile = button.dataset.modfile;
             const infoUrl = button.dataset.modinfo;
 
+            let stopped = false;
+
             button.addEventListener('click', async (e) => {
                 modPlayer.unload();
                 await modPlayer.load(modFile);
@@ -112,7 +114,13 @@
                 modPlayer.watchRows((songPos, row) => {
                     spr.value = songPos;
                     spi.value = songPos;
-                    output.textContent = `Song position: ${songPos}, bar: ${row >> 2} (row ${row})`;
+                    if (!stopped) {
+                        output.textContent = `Song position: ${songPos}, bar: ${row >> 2} (row ${row})`;
+                    }
+                });
+                modPlayer.watchStop(() => {
+                    stopped = true;
+                    output.textContent = 'Song stopped';
                 });
 
                 spr.max = modPlayer.mod.length - 1;

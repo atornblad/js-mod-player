@@ -5,6 +5,7 @@ const GAIN = Symbol('gain');
 const WORKLET = Symbol('worklet');
 const ROW_CALLBACKS = Symbol('rowCallbacks');
 const SINGLE_CALLBACKS = Symbol('singleCallbacks');
+const STOP_CALLBACKS = Symbol('stopCallbacks');
 
 export class ModPlayer {
     constructor(audioContext) {
@@ -15,6 +16,7 @@ export class ModPlayer {
         this[WORKLET] = null;
         this[ROW_CALLBACKS] = [];
         this[SINGLE_CALLBACKS] = { };
+        this[STOP_CALLBACKS] = [];
     }
 
     async load(url) {
@@ -48,6 +50,11 @@ export class ModPlayer {
                     }
                 }
                 break;
+            case 'stop':
+                for (let callback of this[STOP_CALLBACKS]) {
+                    callback();
+                }
+                break;
         }
     }
 
@@ -74,6 +81,13 @@ export class ModPlayer {
 
         // Add the callback to the array
         this[SINGLE_CALLBACKS][key].push(callback);
+    }
+
+    watchStop(callback) {
+        this[WORKLET].port.postMessage({
+            type: 'enableStopSubscription'
+        });
+        this[STOP_CALLBACKS].push(callback);
     }
 
     unload() {

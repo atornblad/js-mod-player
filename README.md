@@ -65,6 +65,7 @@ Public methods of the `ModPlayer` class:
  - `setRow(position, row)` Jumps to a specific time in the music.
  - `watch(position, row, callback)` Registers a callback for a position and row.
  - `watchRows(callback)` Registers a callback for all rows.
+ - `watchStop(callback)` Registers a callback for the "Set Speed Zero `F00` command"
 
 Public member variables of the `ModPlayer` class:
 
