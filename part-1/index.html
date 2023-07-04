@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!--
+        AUTHOR NAME: Anders Marzi Tornblad
+        GITHUB USER: atornblad
+        GITHUB REPO: https://github.com/atornblad/js-mod-player
+        LICENSE:     Creative Commons Attribution-NonCommercial 4.0 International License
+                     https://creativecommons.org/licenses/by-nc/4.0/
+    -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JS-MOD-player by Anders Marzi Tornblad</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">
+    <link rel="repository" href="https://github.com/atornblad/js-mod-player">
+</head>
+
+<body>
+    <header>
+        <h1>JS-MOD-player</h1>
+        <p>Vanilla JavaScript MOD player, made by <a href="https://atornblad.se/">Anders Marzi Tornblad</a></p>
+        <p>GitHub repository: <a href="https://github.com/atornblad/js-mod-player">atornblad/js-mod-player</a></p>
+        <p>License: <a href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a></p>
+    </header>
+    <main>
+        <h2>Part 1 &ndash; Generating sound using Web Audio API</h2>
+        <p>This is the progress of the JavaScript MOD player after the <a href="https://atornblad.se/generating-sound-in-modern-web-audio-api">first article</a>.</p>
+        <p>Click the button below to toggle the audio worklet on/off. In this version, the worklet only plays a simple sine wave.</p>
+        <p>
+            <button class="mod-player" id="play">Click here to play</button>
+        </p>
+    </main>
+
+    <script type="module" src="player.js"></script>
+</body>
+</html>
