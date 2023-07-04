@@ -29,6 +29,7 @@ class Channel {
         this.vibratoDepth = 0;
         this.vibratoSpeed = 0;
         this.vibratoIndex = 0;
+        this.arpeggio = false;
     }
 
     nextOutput() {
@@ -50,7 +51,7 @@ class Channel {
     }
     
     performTick() {
-        if (this.volumeSlide) {
+        if (this.volumeSlide && this.worklet.tick > 0) {
             this.currentVolume += this.volumeSlide;
             if (this.currentVolume < 0) this.currentVolume = 0;
             if (this.currentVolume > 64) this.currentVolume = 64;
@@ -75,7 +76,11 @@ class Channel {
                 this.currentPeriod += this.periodDelta;
             }
         }
-
+        else if (this.arpeggio) {
+            const index = this.worklet.tick % this.arpeggio.length;
+            const halfNotes = this.arpeggio[index];
+            this.currentPeriod = this.period / Math.pow(2, halfNotes / 12);
+        }
         
         if (this.currentPeriod < 113) this.currentPeriod = 113;
         if (this.currentPeriod > 856) this.currentPeriod = 856;
@@ -85,22 +90,19 @@ class Channel {
     }
 
     play(note) {
-        // Keep track of whether the sample should start from the beginning
-        this.setSampleIndex = false;
-
         if (note.instrument) {
             this.instrument = this.worklet.mod.instruments[note.instrument - 1];
-            this.sampleIndex = 0;
             this.volume = this.instrument.volume;
             this.currentVolume = this.volume;
         }
 
-        // Keep track of whether period should change immediately
+        this.setSampleIndex = false;
         this.setCurrentPeriod = false;
 
         if (note.period) {
             this.period = note.period - this.instrument.finetune;
             this.currentPeriod = this.period;
+            this.setSampleIndex = 0;
         }
 
         // setSampleIndex and setCurrentPeriod could change back to false in the effect method
@@ -120,6 +122,7 @@ class Channel {
         this.periodDelta = 0;
         this.portamento = false;
         this.vibrato = false;
+        this.arpeggio = false;
 
         if (!raw) return;
 
@@ -132,6 +135,9 @@ class Channel {
         }
 
         switch (id) {
+            case ARPEGGIO:
+                this.arpeggio = [0, data >> 4, data & 0x0f];
+                break;
             case SET_VOLUME:
                 this.volume = data;
                 this.currentVolume = this.volume;
