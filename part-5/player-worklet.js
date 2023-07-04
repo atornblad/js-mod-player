@@ -26,6 +26,9 @@ class Channel {
         this.sampleIndex = 0;
         this.volume = 64;
         this.portamentoSpeed = 0;
+        this.vibratoDepth = 0;
+        this.vibratoSpeed = 0;
+        this.vibratoIndex = 0;
     }
 
     nextOutput() {
@@ -53,7 +56,11 @@ class Channel {
             if (this.currentVolume > 64) this.currentVolume = 64;
         }
 
-        if (this.periodDelta) {
+        if (this.vibrato) {
+            this.vibratoIndex = (this.vibratoIndex + this.vibratoSpeed) % 64;
+            this.currentPeriod = this.period + Math.sin(this.vibratoIndex / 64 * Math.PI * 2) * this.vibratoDepth;
+        }
+        else if (this.periodDelta) {
             if (this.portamento) {
                 if (this.currentPeriod != this.period) {
                     // Which direction to slide?
@@ -66,10 +73,12 @@ class Channel {
             }
             else {
                 this.currentPeriod += this.periodDelta;
-                if (this.currentPeriod < 113) this.currentPeriod = 113;
-                if (this.currentPeriod > 856) this.currentPeriod = 856;
             }
         }
+
+        
+        if (this.currentPeriod < 113) this.currentPeriod = 113;
+        if (this.currentPeriod > 856) this.currentPeriod = 856;
 
         const sampleRate = PAULA_FREQUENCY / this.currentPeriod;
         this.sampleSpeed = sampleRate / this.worklet.sampleRate;
@@ -109,6 +118,8 @@ class Channel {
     effect(raw) {
         this.volumeSlide = 0;
         this.periodDelta = 0;
+        this.portamento = false;
+        this.vibrato = false;
 
         if (!raw) return;
 
@@ -138,7 +149,35 @@ class Channel {
                 this.setCurrentPeriod = false;
                 this.setSampleIndex = false;
                 break;
+            case TONE_PORTAMENTO_WITH_VOLUME_SLIDE:
+                this.portamento = true;
+                this.setCurrentPeriod = false;
+                this.setSampleIndex = false;
+                this.periodDelta = this.portamentoSpeed;
+                if (data & 0xf0) {
+                    this.volumeSlide = data >> 4;
+                }
+                else if (data & 0x0f) {
+                    this.volumeSlide = -(data & 0x0f);
+                }
+                break;
+            case VIBRATO:
+                const speed = data >> 4;
+                const depth = data & 0x0f;
+                if (speed) this.vibratoSpeed = speed;
+                if (depth) this.vibratoDepth = depth;
+                this.vibrato = true;
+                break;
             case VOLUME_SLIDE:
+                if (data & 0xf0) {
+                    this.volumeSlide = data >> 4;
+                }
+                else if (data & 0x0f) {
+                    this.volumeSlide = -(data & 0x0f);
+                }
+                break;
+            case VIBRATO_WITH_VOLUME_SLIDE:
+                this.vibrato = true;
                 if (data & 0xf0) {
                     this.volumeSlide = data >> 4;
                 }
