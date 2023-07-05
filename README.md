@@ -18,13 +18,10 @@ Add the following `script` element to your html file:
 <script type="module">
     import { ModPlayer } from 'https://atornblad.se/files/js-mod-player/player.js';
 
-    const audio = new AudioContext();
-    const player = new ModPlayer(audio);
-    await player.load('MOD_FILE_FILENAME');
+    const player = new ModPlayer(new AudioContext());
+    await player.load('MOD_FILE_FILENAME_OR_URL');
 
-    window.addEventListener('click', async () => {
-        player.play();
-    });
+    window.addEventListener('click', () => player.play());
 </script>
 ```
 
