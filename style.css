@@ -113,3 +113,9 @@ input[type=number] {
     background-color: var(--input-background);
     color: #000;
 }
+strong {
+    font-weight: 700;
+}
+em {
+    font-style: italic;
+}
