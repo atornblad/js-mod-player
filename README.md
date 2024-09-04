@@ -4,7 +4,7 @@ This is a MOD player, developed in vanilla JavaScript using modern (2022) Web Au
 
 Try it out live on my [GitHub Page](https://atornblad.github.io/js-mod-player).
 
-Read about how it was made on [my Blog](https://atornblad.se/js-mod-player).
+Read about how it was made on [my Blog](https://atornblad.se/javascript-mod-player).
 
 License: [Creative Commons Attribution-NonCommercial 4.0 International License](http://creativecommons.org/licenses/by-nc/4.0/)
 
