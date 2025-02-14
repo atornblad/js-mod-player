@@ -92,7 +92,7 @@ h2 {
     line-height: 1.2;
     margin-bottom: 1rem;
 }
-h1 + p, h2 + p, p + p {
+h1 + p, h2 + p, p + p, p + h2 {
     margin-top: 1rem;
 }
 
@@ -107,11 +107,19 @@ button {
 button:hover {
     background-color: var(--button-hover);
 }
-input[type=number] {
+button:disabled {
+    opacity: 0.7;
+    background-color: var(--button-background);
+    cursor: not-allowed;
+}
+input[type=number], input[type=url] {
     border: 1px solid var(--border);
     padding: 0.2rem 0.5rem;
     background-color: var(--input-background);
     color: #000;
+}
+input[type=url] {
+    min-width: 26em;
 }
 strong {
     font-weight: 700;

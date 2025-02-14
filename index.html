@@ -30,11 +30,17 @@
         <h2>Modules</h2>
         <p>These modules are loaded from <a href="https://modarchive.org/">The Mod Archive</a>.</p>
         <p>
-            <button class="mod-player" data-modinfo="https://modarchive.org/index.php?request=view_by_moduleid&query=48324" data-modfile="https://api.modarchive.org/downloads.php?moduleid=48324">Sanity Arte part 1</button>
-            <button class="mod-player" data-modinfo="https://modarchive.org/index.php?request=view_by_moduleid&query=41529" data-modfile="https://api.modarchive.org/downloads.php?moduleid=41529">Sanity Arte part 2</button>
-            <button class="mod-player" data-modinfo="https://modarchive.org/index.php?request=view_by_moduleid&query=101789" data-modfile="https://api.modarchive.org/downloads.php?moduleid=101789">Phenomena Enigma</button>
-            <button class="mod-player" data-modinfo="https://modarchive.org/index.php?request=view_by_moduleid&query=122692" data-modfile="https://api.modarchive.org/downloads.php?moduleid=122692">Brainblast</button>
+            <button class="mod-player" data-modinfo="https://modarchive.org/module.php?48324" data-modfile="https://api.modarchive.org/downloads.php?moduleid=48324">Sanity Arte part 1</button>
+            <button class="mod-player" data-modinfo="https://modarchive.org/module.php?41529" data-modfile="https://api.modarchive.org/downloads.php?moduleid=41529">Sanity Arte part 2</button>
+            <button class="mod-player" data-modinfo="https://modarchive.org/module.php?101789" data-modfile="https://api.modarchive.org/downloads.php?moduleid=101789">Phenomena Enigma</button>
+            <button class="mod-player" data-modinfo="https://modarchive.org/module.php?122692" data-modfile="https://api.modarchive.org/downloads.php?moduleid=122692">Brainblast</button>
         </p>
+        <p>You can also paste a Mod Archive URL, but keep in mind that only ProTracker MOD files work correctly:</p>
+        <p>
+            <input type="url" id="mod-archive-url" placeholder="https://modarchive.org/....." />
+            <button class="mod-player" id="url-load" disabled>Load and play</button>
+        </p>
+        <h2>Playback</h2>
         <p>
             <label for="songposrange">Position: </label>
             <input type="range" min="0" max="127" value="0" id="songposrange" />
@@ -79,7 +85,9 @@
             songinfo = document.getElementById('songinfo'),
             songname = document.getElementById('songname'),
             modfile = document.getElementById('modfile'),
-            volume = document.getElementById('volume');
+            volume = document.getElementById('volume'),
+            urlInput = document.getElementById('mod-archive-url'),
+            urlButton = document.getElementById('url-load');
 
         const audio = new AudioContext();
         const modPlayer = new ModPlayer(audio);
@@ -102,14 +110,40 @@
             modPlayer.setVolume(0.01 * volume.value);
         });
 
+        urlInput.addEventListener('input', e => {
+            const url = urlInput.value;
+            const permaMatch = url.match(/modarchive\.org\/module\.php\?(\d+)/);
+            const queryMatch = url.match(/modarchive\.org\/index\.php\?.*query=(\d+)/);
+            const downloadMatch = url.match(/api\.modarchive\.org\/downloads\.php\?.*moduleid=(\d+)/);
+            const theMatch = permaMatch ?? queryMatch ?? downloadMatch;
+            const modId = theMatch[1];
+            if (theMatch) {
+                urlButton.dataset.modinfo = `https://modarchive.org/module.php?${modId}`;
+                urlButton.dataset.modfile = `https://api.modarchive.org/downloads.php?moduleid=${modId}`;
+                urlButton.disabled = false;
+            }
+            else {
+                urlButton.dataset.modinfo = '';
+                urlButton.dataset.modfile = '';
+                urlButton.disabled = true;
+            }
+        });
+
+        urlInput.addEventListener('keydown', e => {
+            if (e.code === 'Enter') {
+                urlButton.click();
+            }
+        });
+
         const modPlayerButtons = Array.from(document.querySelectorAll('button.mod-player'));
         for (let button of modPlayerButtons) {
-            const modFile = button.dataset.modfile;
-            const infoUrl = button.dataset.modinfo;
-
             let stopped = false;
 
             button.addEventListener('click', async (e) => {
+                const modFile = button.dataset.modfile;
+                const infoUrl = button.dataset.modinfo;
+                urlInput.value = infoUrl;
+                urlButton.disabled = false;
                 modPlayer.unload();
                 await modPlayer.load(modFile);
                 modPlayer.setVolume(0.01 * volume.value);
