@@ -13,6 +13,8 @@ const SET_VOLUME = 0x0C;
 const PATTERN_BREAK = 0x0D;
 const EXTENDED = 0x0e;
 const SET_SPEED = 0x0f;
+const PORTA_UP_FINE = 0xe1;
+const PORTA_DOWN_FINE = 0xe2;
 const RETRIGGER_NOTE = 0xe9;
 const VOLUME_SLIDE_UP_FINE = 0xea;
 const VOLUME_SLIDE_DOWN_FINE = 0xeb;
@@ -180,6 +182,12 @@ class Channel {
                 this.periodDelta = this.portamentoSpeed;
                 this.setCurrentPeriod = false;
                 this.setSampleIndex = false;
+                break;
+            case PORTA_UP_FINE:
+                this.setPeriod = this.period - effectData;
+                break;
+            case PORTA_DOWN_FINE:
+                this.setPeriod = this.period + effectData;
                 break;
             case VIBRATO:
                 if (effectHigh) this.vibratoSpeed = effectHigh;
