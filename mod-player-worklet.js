@@ -14,6 +14,8 @@ const PATTERN_BREAK = 0x0D;
 const EXTENDED = 0x0e;
 const SET_SPEED = 0x0f;
 const RETRIGGER_NOTE = 0xe9;
+const VOLUME_SLIDE_UP_FINE = 0xea;
+const VOLUME_SLIDE_DOWN_FINE = 0xeb;
 const DELAY_NOTE = 0xed;
 
 const unimplementedEffects = new Set();
@@ -200,6 +202,12 @@ class Channel {
             case VOLUME_SLIDE:
                 if (effectHigh) this.volumeSlide = effectHigh;
                 else if (effectLow) this.volumeSlide = -effectLow;
+                break;
+            case VOLUME_SLIDE_UP_FINE:
+                this.setVolume = Math.min(64, this.volume + effectData);
+                break;
+            case VOLUME_SLIDE_DOWN_FINE:
+                this.setVolume = Math.max(0, this.volume - effectData);
                 break;
             case SAMPLE_OFFSET:
                 this.setSampleIndex = effectData * 256;
