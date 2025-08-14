@@ -40,6 +40,11 @@
             <input type="url" id="mod-archive-url" placeholder="https://modarchive.org/....." />
             <button class="mod-player" id="url-load" disabled>Load and play</button>
         </p>
+        <p><strong>DANGER:</strong> You can also type any URL of a Protracker MOD file:</p>
+        <p>
+            <input type="url" id="any-url" placeholder="https://ftp.modland.com/....." />
+            <button class="mod-player" id="any-url-load" disabled>Load and play</button>
+        </p>
         <h2>Playback</h2>
         <p>
             <label for="songposrange">Position: </label>
@@ -55,8 +60,9 @@
             <input type="range" min="0" max="100" value="30" id="volume" />
         </p>
         <p id="song"></p>
-        <p id="output">Playing song <a id="songinfo" href="" target="_blank"><span id="songname">---</span> <em>(from The Mod Archive)</em><br>
+        <p id="output">Playing song <a id="songinfo" href="" target="_blank"><span id="songname">---</span><br>
             Mod file source: <a id="modfile" href="" download>----</a></p>
+        <p id="instruments"><strong>Instruments:</strong></p>
     </main>
     <footer>
         <h2>Blog posts:</h2>
@@ -73,7 +79,7 @@
     </footer>
 
     <script type="module">
-        import { ModPlayer } from 'https://atornblad.se/files/js-mod-player/player.js';
+        import { ModPlayer } from 'https://atornblad.se/files/js-mod-player/player.js?v=20250807';
 
         const
             spr = document.getElementById('songposrange'),
@@ -87,7 +93,10 @@
             modfile = document.getElementById('modfile'),
             volume = document.getElementById('volume'),
             urlInput = document.getElementById('mod-archive-url'),
-            urlButton = document.getElementById('url-load');
+            urlButton = document.getElementById('url-load'),
+            urlInput2 = document.getElementById('any-url'),
+            urlButton2 = document.getElementById('any-url-load'),
+            instruments = document.getElementById('instruments');
 
         const audio = new AudioContext();
         const modPlayer = new ModPlayer(audio);
@@ -135,6 +144,19 @@
             }
         });
 
+        urlInput2.addEventListener('input', e => {
+            const url = urlInput2.value;
+            urlButton2.dataset.modinfo = '';
+            urlButton2.dataset.modfile = url;
+            urlButton2.disabled = url.trim().length < 15;
+        });
+
+        urlInput2.addEventListener('keydown', e => {
+            if (e.code === 'Enter') {
+                urlButton2.click();
+            }
+        });
+
         const modPlayerButtons = Array.from(document.querySelectorAll('button.mod-player'));
         for (let button of modPlayerButtons) {
             let stopped = false;
@@ -143,9 +165,13 @@
                 const modFile = button.dataset.modfile;
                 const infoUrl = button.dataset.modinfo;
                 urlInput.value = infoUrl;
+                urlInput2.value = modFile;
                 urlButton.disabled = false;
                 modPlayer.unload();
                 await modPlayer.load(modFile);
+                const instrumentNames = modPlayer.mod.instruments.filter(i => !!i && !!i.name).map((i, idx) => `<span class="instrument-name" title="Instrument ${idx}">${i.name}</span>`);
+                instruments.innerHTML = '<strong>Instruments:</strong><br>' + instrumentNames.join('<br>');
+                console.log(instrumentNames);
                 modPlayer.setVolume(0.01 * volume.value);
                 modPlayer.watchRows((songPos, row) => {
                     spr.value = songPos;
@@ -162,9 +188,11 @@
                 spr.max = modPlayer.mod.length - 1;
                 spi.max = modPlayer.mod.length - 1;
 
-                songname.textContent = modPlayer.mod.name;
-                songinfo.href = infoUrl;
-                song.innerHTML = `Playing song <a target="_blank" href="${infoUrl}">${modPlayer.mod.name} <em>(From The Mod Archive)</em></a><br/>Mod file source: <a href="${modFile}" download>${modFile}</a><br/>`;
+                if (infoUrl) {
+                    song.innerHTML = `Playing song <a target="_blank" href="${infoUrl}">${modPlayer.mod.name} <em>(From The Mod Archive)</em></a><br/>Mod file source: <a href="${modFile}" download>${modFile}</a><br/>`;
+                } else {
+                    song.innerHTML = `Playing song <strong>${modPlayer.mod.name}</strong><br/>Mod file source: <a href="${modFile}" download>${modFile}</a><br/>`;
+                }
 
                 modPlayer.play();
             });
