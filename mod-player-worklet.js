@@ -23,8 +23,9 @@ const DELAY_NOTE = 0xed;
 const unimplementedEffects = new Set();
 
 class Channel {
-    constructor(worklet) {
+    constructor(worklet, index) {
         this.worklet = worklet;
+        this.channelIndex = index;
         this.instrument = null;
         this.playing = false;
         this.period = 0;
@@ -108,6 +109,8 @@ class Channel {
     }
 
     play(note) {
+        let publishNote = false;
+
         this.setInstrument = false;
         this.setVolume = false;
         this.setPeriod = false;
@@ -127,6 +130,7 @@ class Channel {
             this.setPeriod = note.period - finetune;
             this.setCurrentPeriod = true;
             this.setSampleIndex = 0;
+            publishNote = true;
         }
 
         this.effect(note);
@@ -152,6 +156,16 @@ class Channel {
 
         if (this.setSampleIndex !== false) {
             this.sampleIndex = this.setSampleIndex;
+        }
+
+        if (this.worklet.publishNote && publishNote) {
+            this.worklet.port.postMessage({
+                type: 'note',
+                channel: this.channelIndex,
+                sample: this.instrument?.index,
+                volume: this.currentVolume,
+                period: this.period
+            });
         }
     }
 
@@ -256,10 +270,11 @@ class ModPlayerWorklet extends AudioWorkletProcessor {
         super();
         this.port.onmessage = this.onmessage.bind(this);
         this.mod = null;
-        this.channels = [ new Channel(this), new Channel(this), new Channel(this), new Channel(this) ];
+        this.channels = [ new Channel(this, 1), new Channel(this, 2), new Channel(this, 3), new Channel(this,4) ];
         this.patternBreak = false;
         this.publishRow = false;
         this.publishStop = false;
+        this.publishNote = false;
     }
 
     onmessage(e) {
@@ -284,6 +299,9 @@ class ModPlayerWorklet extends AudioWorkletProcessor {
                 break;
             case 'enableStopSubscription':
                 this.publishStop = true;
+                break;
+            case 'enableNoteSubscription':
+                this.publishNote = true;
                 break;
         }
     }

@@ -6,6 +6,24 @@ const WORKLET = Symbol('worklet');
 const ROW_CALLBACKS = Symbol('rowCallbacks');
 const SINGLE_CALLBACKS = Symbol('singleCallbacks');
 const STOP_CALLBACKS = Symbol('stopCallbacks');
+const ALL_NOTES_CALLBACKS = Symbol('allNotesCallbacks');
+
+const range = function* (min, max) {
+    for (let i = min; i <= max; ++i) {
+        yield i;
+    }
+};
+
+const map = function* (iterator, func) {
+    for (let i of iterator) {
+        yield func(i);
+    }
+}
+
+const notePerPeriod = [...map(range(0, 65535), p => 
+    p < 124 ? null :
+    24 + Math.round(12 * Math.log2(428 / p))
+)];
 
 export class ModPlayer {
     constructor(audioContext) {
@@ -17,6 +35,7 @@ export class ModPlayer {
         this[ROW_CALLBACKS] = [];
         this[SINGLE_CALLBACKS] = { };
         this[STOP_CALLBACKS] = [];
+        this[ALL_NOTES_CALLBACKS] = [];
     }
 
     async load(url) {
@@ -55,6 +74,16 @@ export class ModPlayer {
                     callback();
                 }
                 break;
+            case 'note':
+                for (let callback of this[ALL_NOTES_CALLBACKS]) {
+                    callback({
+                        channel: data.channel,
+                        sample: data.sample,
+                        volume: data.volume,
+                        note: notePerPeriod[data.period]
+                    });
+                }
+                break;
         }
     }
 
@@ -90,6 +119,13 @@ export class ModPlayer {
         this[STOP_CALLBACKS].push(callback);
     }
 
+    watchNotes(callback) {
+        this[WORKLET].port.postMessage({
+            type: 'enableNoteSubscription'
+        });
+        this[ALL_NOTES_CALLBACKS].push(callback);
+    }
+
     unload() {
         if (this.playing) this.stop();
         if (!this[WORKLET]) return;
@@ -102,6 +138,7 @@ export class ModPlayer {
         this[WORKLET] = null;
         this[ROW_CALLBACKS] = [];
         this[SINGLE_CALLBACKS] = { };
+        this[ALL_NOTES_CALLBACKS] = [ ];
     }
 
     play() {
