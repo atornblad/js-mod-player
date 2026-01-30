@@ -51,6 +51,20 @@
             <input type="range" min="0" max="127" value="0" id="songposrange" />
             <input type="number" min="0" max="127" value="0" id="songposinput" />
         </p>
+        <table>
+            <tr>
+                <th>Channel 1</th>
+                <th>Channel 2</th>
+                <th>Channel 3</th>
+                <th>Channel 4</th>
+            </tr>
+            <tr>
+                <td><div class="note_display" id="note-disp-1"></div></td>
+                <td><div class="note_display" id="note-disp-2"></div></td>
+                <td><div class="note_display" id="note-disp-3"></div></td>
+                <td><div class="note_display" id="note-disp-4"></div></td>
+            </tr>
+        </table>
         <p>
             <button id="stop">Stop</button>
             <button id="resume">Resume</button>
@@ -79,7 +93,7 @@
     </footer>
 
     <script type="module">
-        import { ModPlayer } from 'https://atornblad.se/files/js-mod-player/player.js?v=20250807';
+        import { ModPlayer } from 'https://atornblad.se/files/js-mod-player/player.js?v=20260130';
 
         const
             spr = document.getElementById('songposrange'),
@@ -96,7 +110,31 @@
             urlButton = document.getElementById('url-load'),
             urlInput2 = document.getElementById('any-url'),
             urlButton2 = document.getElementById('any-url-load'),
-            instruments = document.getElementById('instruments');
+            instruments = document.getElementById('instruments'),
+            noteDisplays = [...document.querySelectorAll('div.note_display')];
+
+        for (let noteDisp of noteDisplays) {
+            noteDisp.style.display = 'inline-block';
+            noteDisp.style.width = '20px';
+            noteDisp.style.height = '64px';
+            noteDisp.parentElement.style.textAlign = 'center';
+            noteDisp.style.backgroundColor = '#ddd';
+            noteDisp._vol = 0;
+        }
+
+        window.setInterval(() => {
+            for (let noteDisp of noteDisplays) {
+                if (noteDisp._vol) {
+                    const percent = (64 - noteDisp._vol) * 100 / 64;
+                    const perc = percent.toFixed(0);
+                    noteDisp.style.background = `linear-gradient(#eee, #eee ${perc}%, #f55 ${perc}%, #dd5, #5b5)`;
+                    noteDisp._vol = Math.max(0, noteDisp._vol - 3);
+                }
+                else {
+                    noteDisp.style.background = '#eee';
+                }
+            }
+        }, 20);
 
         const audio = new AudioContext();
         const modPlayer = new ModPlayer(audio);
@@ -183,6 +221,9 @@
                 modPlayer.watchStop(() => {
                     stopped = true;
                     output.textContent = 'Song stopped';
+                });
+                modPlayer.watchNotes(({channel, sample, volume, note}) => {
+                    noteDisplays[channel - 1]._vol = volume;
                 });
 
                 spr.max = modPlayer.mod.length - 1;
