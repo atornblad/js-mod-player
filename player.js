@@ -38,6 +38,7 @@ export class ModPlayer {
         this[ALL_NOTES_CALLBACKS] = [];
     }
 
+    /// Loads an Amiga ProTracker MOD filed from a given url
     async load(url) {
         if (this[WORKLET]) this.unload();
 
@@ -87,6 +88,11 @@ export class ModPlayer {
         }
     }
 
+    /// Subscribes to all rows
+    /// The position is the index of the 64-row block of music data
+    /// The row is the row index within that block
+    /// The callback for watchRows must have the following signature:
+    /// callbackFunc(position,row)
     watchRows(callback) {
         this[WORKLET].port.postMessage({
             type: 'enableRowSubscription'
@@ -94,6 +100,9 @@ export class ModPlayer {
         this[ROW_CALLBACKS].push(callback);
     }
 
+    /// Subscribes to a single row
+    /// The callback for watch must have the following signature:
+    /// callbackFunc()
     watch(position, row, callback) {
         this[WORKLET].port.postMessage({
             type: 'enableRowSubscription'
@@ -112,6 +121,9 @@ export class ModPlayer {
         this[SINGLE_CALLBACKS][key].push(callback);
     }
 
+    /// Subscribes to when music stops playing
+    /// The callback for watch must have the following signature:
+    /// callbackFunc()
     watchStop(callback) {
         this[WORKLET].port.postMessage({
             type: 'enableStopSubscription'
@@ -119,6 +131,9 @@ export class ModPlayer {
         this[STOP_CALLBACKS].push(callback);
     }
 
+    /// Subscribes to all individual notes starting
+    /// The callback for watchNotes must have the following signature:
+    /// callbackFunc( { channel: 1..4, sample: 1..32, volume: 1..64, note: -63..45 } )
     watchNotes(callback) {
         this[WORKLET].port.postMessage({
             type: 'enableNoteSubscription'
@@ -126,6 +141,7 @@ export class ModPlayer {
         this[ALL_NOTES_CALLBACKS].push(callback);
     }
 
+    /// Unloads a MOD file and removes all subscriptions
     unload() {
         if (this.playing) this.stop();
         if (!this[WORKLET]) return;
@@ -141,6 +157,7 @@ export class ModPlayer {
         this[ALL_NOTES_CALLBACKS] = [ ];
     }
 
+    /// Starts the playback of a MOD file from position 0, row 0
     play() {
         if (this.playing) return;
         if (!this[WORKLET]) return;
@@ -155,6 +172,7 @@ export class ModPlayer {
         this.playing = true;
     }
 
+    /// Stops the playback
     stop() {
         if (!this.playing) return;
 
@@ -165,6 +183,7 @@ export class ModPlayer {
         this.playing = false;
     }
 
+    /// Resumes the playback of a MOD file from the last stop() positio
     resume() {
         if (this.playing) return;
 
@@ -175,6 +194,7 @@ export class ModPlayer {
         this.playing = true;
     }
 
+    /// Immediately jumps to a specific position and row
     setRow(position, row) {
         this[WORKLET].port.postMessage({
             type: 'setRow',
@@ -183,6 +203,7 @@ export class ModPlayer {
         });
     }
 
+    /// Sets the playback volume
     setVolume(volume) {
         this[GAIN].gain.value = volume;
     }
