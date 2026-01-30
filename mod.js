@@ -2,6 +2,7 @@ class Instrument {
     constructor(modfile, index, sampleStart) {
         const data = new Uint8Array(modfile, 20 + index * 30, 30);
         const nameBytes = data.slice(0, 21).filter(a => !!a);
+        this.index = index;
         this.name = String.fromCodePoint(...nameBytes).trim();
         this.length = 2 * (data[22] * 256 + data[23]);
         this.finetune = data[24];
